@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unit 4 Macroeconomics Dashboard Prototype</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #d1d5db;
+      --accent: #4f46e5;
+      --accent-soft: #e0e7ff;
+      --good: #0f766e;
+      --warn: #b45309;
+      --bad: #dc2626;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(180deg, #eef2ff 0%, var(--bg) 220px);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .container {
+      width: min(1200px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 48px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      background: rgba(255,255,255,0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.7);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+
+    .hero-copy h1 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.05;
+    }
+
+    .hero-copy p {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 220px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(79, 70, 229, 0.15), transparent 36%),
+        radial-gradient(circle at 80% 30%, rgba(14, 165, 233, 0.16), transparent 28%),
+        linear-gradient(180deg, #ffffff, #eef3ff);
+      border: 1px solid #dbe4ff;
+      overflow: hidden;
+    }
+
+    .hero-visual svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: white;
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      border-color: #a5b4fc;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .status-bar {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin: 20px 0 24px;
+    }
+
+    .status-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .status-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .status-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .research-band {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px 22px;
+      margin: 0 0 18px;
+    }
+
+    .research-band-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 14px;
+    }
+
+    .research-band-head h2 {
+      margin: 0 0 4px;
+      font-size: 1.35rem;
+    }
+
+    .research-band-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .research-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .research-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid #c7d2fe;
+      background: #eef2ff;
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .research-pill small {
+      color: #4338ca;
+      font-weight: 700;
+      opacity: 0.85;
+    }
+
+    .research-pill:hover {
+      background: #e0e7ff;
+    }
+
+    .research-note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 6px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 800;
+      font-size: 1.15rem;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+
+    .tab-btn.active {
+      background: var(--accent-soft);
+      color: #312e81;
+      border-color: #a5b4fc;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .flow-stack {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 8px;
+      font-size: 1.5rem;
+    }
+
+    .panel .sub {
+      color: var(--muted);
+      margin-bottom: 16px;
+      font-size: 0.96rem;
+    }
+
+    .student-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    textarea,
+    select,
+    input[type="range"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      border-radius: 14px;
+      padding: 12px 14px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .indicator-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .chip {
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chip.active {
+      background: var(--accent-soft);
+      color: #312e81;
+      border-color: #a5b4fc;
+    }
+
+    .indicator-section { display: none; }
+    .indicator-section.active { display: block; }
+
+    .section-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      background: #fcfcff;
+    }
+
+    .field-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .field-help {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-bottom: 10px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .dashboard-card {
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 18px;
+      background: linear-gradient(180deg, #ffffff, #f9fbff);
+    }
+
+    .dashboard-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .mini-grid,
+    .trend-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+      align-items: end;
+    }
+
+    .dial-wrap {
+      padding: 8px 6px 2px;
+    }
+
+    .dial-readout {
+      text-align: center;
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin: 10px 0 12px;
+      color: #312e81;
+    }
+
+    .dial-help {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-top: 8px;
+    }
+
+    .speedometer {
+      position: relative;
+      width: 100%;
+      max-width: 290px;
+      margin: 0 auto 8px;
+      aspect-ratio: 1.5 / 1;
+      cursor: pointer;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .speedometer-arc {
+      position: absolute;
+      inset: 0;
+      border-top-left-radius: 280px 220px;
+      border-top-right-radius: 280px 220px;
+      border-bottom: 0;
+      background: var(--gauge-gradient, conic-gradient(from 180deg, var(--bad) 0deg 60deg, #f59e0b 60deg 120deg, #22c55e 120deg 180deg));
+      -webkit-mask: radial-gradient(circle at 50% 100%, transparent 0 50%, #000 51%);
+              mask: radial-gradient(circle at 50% 100%, transparent 0 50%, #000 51%);
+      transition: background 0.15s ease;
+    }
+
+    .speedometer-center {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 18px;
+      height: 18px;
+      background: #111827;
+      border-radius: 50%;
+      transform: translate(-50%, 50%);
+      box-shadow: 0 0 0 6px white;
+      z-index: 4;
+    }
+
+    .needle {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 4px;
+      height: 92px;
+      background: var(--needle-color, #111827);
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(-90deg);
+      border-radius: 999px;
+      z-index: 3;
+      transition: background 0.15s ease;
+    }
+
+    .needle::after {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      background: var(--needle-color, #111827);
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      transform: translateX(-50%);
+    }
+
+    .dial-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 0.86rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .vertical-gauge {
+      position: relative;
+      width: 84px;
+      height: 250px;
+      margin: 6px auto 8px;
+      cursor: pointer;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .vertical-track {
+      position: absolute;
+      left: 50%;
+      top: 10px;
+      bottom: 10px;
+      width: 24px;
+      transform: translateX(-50%);
+      border-radius: 999px;
+      background: var(--gauge-gradient, linear-gradient(180deg, #22c55e 0%, #f59e0b 50%, #dc2626 100%));
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6);
+      transition: background 0.15s ease;
+    }
+
+    .vertical-marker {
+      position: absolute;
+      left: 50%;
+      width: 60px;
+      height: 12px;
+      border-radius: 999px;
+      background: var(--needle-color, #111827);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 4px white;
+      transition: background 0.15s ease;
+    }
+
+    .vertical-marker::before,
+    .vertical-marker::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 0;
+      height: 0;
+      transform: translateY(-50%);
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+    }
+
+    .vertical-marker::before {
+      left: -8px;
+      border-right: 10px solid var(--needle-color, #111827);
+    }
+
+    .vertical-marker::after {
+      right: -8px;
+      border-left: 10px solid var(--needle-color, #111827);
+    }
+
+    .vertical-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.86rem;
+      color: var(--muted);
+      font-weight: 700;
+      max-width: 220px;
+      margin: 0 auto;
+    }
+
+    .vertical-labels span:last-child {
+      text-align: right;
+    }
+
+    .source-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .source-links a {
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .source-links a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 12px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 980px) {
+      .hero,
+      .student-meta,
+      .status-bar,
+      .section-grid,
+      .dashboard-grid,
+      .mini-grid,
+      .trend-row,
+      .tabs {
+        grid-template-columns: 1fr;
+      }
+
+      .research-band-head {
+        display: block;
+      }
+
+      .hero-visual {
+        min-height: 180px;
+      }
+    }
+
+    @media print {
+      body { background: white; }
+      .toolbar, .tabs, .indicator-nav, .footer-note { display: none !important; }
+      .hero, .panel, .status-card, .dashboard-card, .field-card { box-shadow: none; }
+      .tab-panel { display: block !important; }
+      .grid { grid-template-columns: 1fr; }
+      .indicator-section { display: block !important; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <div class="hero-copy">
+        <h1>Unit 4 Macroeconomics Project</h1>
+        <p>
+          Build a practical guide to the U.S. economy by explaining four major macroeconomic indicators,
+          analyzing why they matter to a young adult, and then setting a live economic dashboard.
+          Same assignment logic, better visual form, fewer dead-eyed worksheet vibes.
+        </p>
+        <div class="toolbar">
+          <button class="primary" id="saveBtn">Save in Browser</button>
+          <button id="exportBtn">Export Responses</button>
+          <button id="importBtn">Import Responses</button>
+          <button onclick="window.print()">Print / Save as PDF</button>
+          <button id="clearBtn">Clear All</button>
+          <input id="importFile" class="hidden" type="file" accept="application/json" />
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <svg viewBox="0 0 500 260" role="img">
+          <defs>
+            <linearGradient id="lineGrad" x1="0" x2="1">
+              <stop offset="0%" stop-color="#818cf8" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#06b6d4" stop-opacity="0.5"/>
+            </linearGradient>
+            <linearGradient id="barGrad" x1="0" x2="0" y1="1" y2="0">
+              <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#4f46e5" stop-opacity="0.55"/>
+            </linearGradient>
+          </defs>
+          <g opacity="0.9">
+            <line x1="35" y1="210" x2="465" y2="210" stroke="#c7d2fe" stroke-width="2" />
+            <line x1="55" y1="40" x2="55" y2="220" stroke="#c7d2fe" stroke-width="2" />
+            <rect x="90" y="135" width="40" height="75" rx="8" fill="url(#barGrad)" />
+            <rect x="145" y="110" width="40" height="100" rx="8" fill="url(#barGrad)" />
+            <rect x="200" y="150" width="40" height="60" rx="8" fill="url(#barGrad)" />
+            <rect x="255" y="88" width="40" height="122" rx="8" fill="url(#barGrad)" />
+            <rect x="310" y="65" width="40" height="145" rx="8" fill="url(#barGrad)" />
+            <rect x="365" y="95" width="40" height="115" rx="8" fill="url(#barGrad)" />
+            <path d="M75 160 C 120 120, 165 165, 215 120 S 315 65, 390 95 S 430 130, 455 78" fill="none" stroke="url(#lineGrad)" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="390" cy="95" r="7" fill="#06b6d4" />
+            <circle cx="455" cy="78" r="8" fill="#4f46e5" />
+            <g transform="translate(365,16)">
+              <rect x="0" y="0" width="106" height="50" rx="14" fill="#ffffff" stroke="#dbe4ff" />
+              <text x="12" y="20" font-size="11" fill="#6b7280" font-family="Arial, Helvetica, sans-serif">Economic Signals</text>
+              <text x="12" y="37" font-size="18" font-weight="700" fill="#1f2937" font-family="Arial, Helvetica, sans-serif">Dashboard</text>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </section>
+
+    <section class="status-bar">
+      <div class="status-card">
+        <div class="status-label">Completion</div>
+        <div class="status-value" id="completionValue">0%</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Sections Started</div>
+        <div class="status-value" id="startedValue">0 / 4</div>
+      </div>
+      <div class="status-card">
+        <div class="status-label">Dashboard Ready</div>
+        <div class="status-value" id="dashboardValue">No</div>
+      </div>
+    </section>
+
+    <section class="research-band">
+      <div class="research-band-head">
+        <div>
+          <h2>Research Links</h2>
+          <p>Use these sources to find current data before you write and before you set the dashboard. This works much better than just guessing with confidence, which students adore.</p>
+        </div>
+      </div>
+      <div class="research-pill-row">
+        <a class="research-pill" href="https://fred.stlouisfed.org/" target="_blank" rel="noreferrer">FRED Graphs <small>Data</small></a>
+        <a class="research-pill" href="https://www.bls.gov/" target="_blank" rel="noreferrer">Bureau of Labor Statistics <small>Jobs</small></a>
+        <a class="research-pill" href="https://www.bea.gov/" target="_blank" rel="noreferrer">Bureau of Economic Analysis <small>GDP</small></a>
+        <a class="research-pill" href="https://www.federalreserve.gov/" target="_blank" rel="noreferrer">Federal Reserve <small>Rates</small></a>
+      </div>
+      <div class="research-note">Prototype note: this version saves in the browser and lets students export a JSON file for submission or backup.</div>
+    </section>
+
+    <div class="tabs">
+      <button class="tab-btn active" type="button" data-tab="responsesTab">Part 1: Written Responses</button>
+      <button class="tab-btn" type="button" data-tab="dashboardTab">Part 2: Economic Dashboard</button>
+    </div>
+
+    <section class="tab-panel active" id="responsesTab">
+      <div class="flow-stack">
+        <section class="panel">
+          <h2>Student Information</h2>
+          <div class="sub">Fill this out first so the teacher knows whose masterpiece of economic literacy this is.</div>
+          <div class="student-meta">
+            <div>
+              <label for="studentName">Student Name</label>
+              <input type="text" id="studentName" data-save placeholder="Enter your full name" />
+            </div>
+            <div>
+              <label for="classPeriod">Class / Period</label>
+              <input type="text" id="classPeriod" data-save placeholder="Example: Period 4" />
+            </div>
+            <div>
+              <label for="teacherName">Teacher</label>
+              <input type="text" id="teacherName" data-save placeholder="Teacher name" />
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Macroeconomic Indicators</h2>
+          <div class="sub">Students write through each indicator first. Then they move to the dashboard tab and set the gauges.</div>
+          <div class="indicator-nav" id="indicatorNav"></div>
+          <div id="indicatorSections"></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="tab-panel" id="dashboardTab">
+      <section class="panel">
+        <h2>Economic Dashboard</h2>
+        <div class="sub">This is the final stage. Students set each gauge to match current conditions and create a visual snapshot of the economy.</div>
+      </section>
+      <section class="panel">
+        <h2>Set the Dashboard</h2>
+        <div class="sub">Click or drag directly on each graphic. GDP and unemployment use dials. Inflation and the federal funds rate use vertical gauges.</div>
+<div class="dashboard-grid" id="dashboardGrid"></div>
+      </section>
+    </section>
+  </div>
+
+  <script>
+    const indicators = [
+      {
+        id: 'gdp',
+        title: 'GDP Growth Rate',
+        prompts: {
+          identification: '2-3 sentences describing what it is and how it is measured.',
+          significance: '2-3 sentences explaining the significance of GDP growth rate to a young adult’s life.',
+          increasing: 'Give 2 suggestions for what a young adult should consider doing or waiting on when GDP growth is increasing, and explain why.',
+          decreasing: 'Give 2 suggestions for what a young adult should consider doing or waiting on when GDP growth is decreasing, and explain why.'
+        },
+        dashboard: {
+          scaleLeft: 'Very Slow',
+          scaleRight: 'Very Fast',
+          labels: ['Very Slow', 'Moderate', 'Very Fast']
+        }
+      },
+      {
+        id: 'unemployment',
+        title: 'Unemployment Rate',
+        prompts: {
+          identification: '2-3 sentences describing what it is and how it is measured.',
+          significance: '2-3 sentences explaining the significance of the unemployment rate to a young adult’s life.',
+          increasing: 'Give suggestions for what a young adult should consider doing or waiting on when the unemployment rate is increasing, and explain why.',
+          decreasing: 'Give suggestions for what a young adult should consider doing or waiting on when the unemployment rate is decreasing, and explain why.'
+        },
+        dashboard: {
+          scaleLeft: 'Very Low',
+          scaleRight: 'Very High',
+          labels: ['Very Low', 'Moderate', 'Very High']
+        }
+      },
+      {
+        id: 'inflation',
+        title: 'Inflation Rate',
+        prompts: {
+          identification: '2-3 sentences describing what it is and how it is measured.',
+          significance: '2-3 sentences explaining the significance of the CPI inflation rate to a young adult’s life.',
+          increasing: 'Give 2 suggestions for what a young adult should consider doing or waiting on when the CPI inflation rate is increasing, and explain why.',
+          decreasing: 'Give 2 suggestions for what a young adult should consider doing or waiting on when the CPI inflation rate is decreasing, and explain why.'
+        },
+        dashboard: {
+          scaleLeft: 'Very Low',
+          scaleRight: 'Very High',
+          labels: ['Very Low', 'Moderate', 'Very High']
+        }
+      },
+      {
+        id: 'fedfunds',
+        title: 'Federal Funds Rate',
+        prompts: {
+          identification: '2-3 sentences describing what it is and why the Fed may adjust it.',
+          significance: '2-3 sentences explaining the significance of the federal funds rate to a young adult’s life.',
+          increasing: 'Give 2 suggestions for what a young adult should consider doing or waiting on when the federal funds rate is increasing, and explain why.',
+          decreasing: 'Give 2 suggestions for what a young adult should consider doing or waiting on when the federal funds rate is decreasing, and explain why.'
+        },
+        dashboard: {
+          scaleLeft: 'Very Low',
+          scaleRight: 'Very High',
+          labels: ['Very Low', 'Moderate', 'Very High']
+        }
+      }
+    ];
+
+    const STORAGE_KEY = 'econ-dashboard-prototype-v2';
+
+    function makeTabs() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => setActiveTab(btn.dataset.tab));
+      });
+    }
+
+    function setActiveTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+      document.querySelectorAll('.tab-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === tabId);
+      });
+    }
+
+    function makeIndicatorNav() {
+      const nav = document.getElementById('indicatorNav');
+      indicators.forEach((indicator, index) => {
+        const chip = document.createElement('button');
+        chip.className = 'chip' + (index === 0 ? ' active' : '');
+        chip.textContent = indicator.title;
+        chip.type = 'button';
+        chip.dataset.target = indicator.id;
+        chip.addEventListener('click', () => setActiveIndicator(indicator.id));
+        nav.appendChild(chip);
+      });
+    }
+
+    function makeIndicatorSections() {
+      const container = document.getElementById('indicatorSections');
+      indicators.forEach((indicator, index) => {
+        const section = document.createElement('section');
+        section.className = 'indicator-section' + (index === 0 ? ' active' : '');
+        section.id = indicator.id;
+        section.innerHTML = `
+          <div class="section-grid">
+            <div class="field-card">
+              <h3>Identification</h3>
+              <div class="field-help">${indicator.prompts.identification}</div>
+              <textarea data-save id="${indicator.id}_identification" placeholder="Write your identification here..."></textarea>
+            </div>
+            <div class="field-card">
+              <h3>Significance</h3>
+              <div class="field-help">${indicator.prompts.significance}</div>
+              <textarea data-save id="${indicator.id}_significance" placeholder="Write your significance explanation here..."></textarea>
+            </div>
+            <div class="field-card">
+              <h3>When It Is Increasing</h3>
+              <div class="field-help">${indicator.prompts.increasing}</div>
+              <textarea data-save id="${indicator.id}_increasing" placeholder="Write your increasing-trend advice here..."></textarea>
+            </div>
+            <div class="field-card">
+              <h3>When It Is Decreasing</h3>
+              <div class="field-help">${indicator.prompts.decreasing}</div>
+              <textarea data-save id="${indicator.id}_decreasing" placeholder="Write your decreasing-trend advice here..."></textarea>
+            </div>
+          </div>
+        `;
+        container.appendChild(section);
+      });
+    }
+
+    function makeDashboard() {
+      const grid = document.getElementById('dashboardGrid');
+      indicators.forEach((indicator) => {
+        const gaugeMarkup = (indicator.id === 'gdp' || indicator.id === 'unemployment')
+          ? `
+            <div class="dial-wrap">
+              <div class="speedometer direct-gauge" id="${indicator.id}_gauge" data-gauge-type="dial" data-indicator="${indicator.id}">
+                <div class="speedometer-arc" id="${indicator.id}_arc"></div>
+                <div class="needle" id="${indicator.id}_needle"></div>
+                <div class="speedometer-center"></div>
+              </div>
+              <div class="dial-labels">
+                <span>${indicator.dashboard.scaleLeft}</span>
+                <span>${indicator.dashboard.scaleRight}</span>
+              </div>
+              <div class="dial-readout" id="${indicator.id}_dial_label">Set the gauge</div>
+              <div class="dial-help">Drag or click directly on the gauge to move the arrow.</div>
+              <input class="hidden" type="range" min="0" max="100" step="1" value="50" id="${indicator.id}_dial" data-save />
+            </div>
+          `
+          : `
+            <div class="dial-wrap">
+              <div class="vertical-gauge direct-gauge" id="${indicator.id}_gauge" data-gauge-type="vertical" data-indicator="${indicator.id}">
+                <div class="vertical-track" id="${indicator.id}_track"></div>
+                <div class="vertical-marker" id="${indicator.id}_marker"></div>
+              </div>
+              <div class="vertical-labels">
+                <span>${indicator.dashboard.scaleLeft}</span>
+                <span>${indicator.dashboard.scaleRight}</span>
+              </div>
+              <div class="dial-readout" id="${indicator.id}_dial_label">Set the gauge</div>
+              <div class="dial-help">Drag or click directly on the gauge to move the marker.</div>
+              <input class="hidden" type="range" min="0" max="100" step="1" value="50" id="${indicator.id}_dial" data-save />
+            </div>
+          `;
+
+        const card = document.createElement('div');
+        card.className = 'dashboard-card';
+        card.innerHTML = `
+          <h3>${indicator.title}</h3>
+          <div class="mini-grid">
+            <div>
+              <label for="${indicator.id}_current">Most Recent Value</label>
+              <input type="text" id="${indicator.id}_current" data-save placeholder="Example: 3.2% (Jan 2026)" />
+            </div>
+            <div>
+              <label for="${indicator.id}_past">12 Months Ago</label>
+              <input type="text" id="${indicator.id}_past" data-save placeholder="Example: 2.5% (Jan 2025)" />
+            </div>
+          </div>
+          <div class="trend-row">
+            <div>
+              <label for="${indicator.id}_trend">Trend Over Last 12 Months</label>
+              <select id="${indicator.id}_trend" data-save>
+                <option value="">Choose trend</option>
+                <option value="up">Increasing</option>
+                <option value="down">Decreasing</option>
+                <option value="flat">About the Same</option>
+              </select>
+            </div>
+            <div>
+              <label for="${indicator.id}_note">Quick Interpretation</label>
+              <input type="text" id="${indicator.id}_note" data-save placeholder="Example: Prices are cooling" />
+            </div>
+          </div>
+          ${gaugeMarkup}
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function setActiveIndicator(id) {
+      document.querySelectorAll('.chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.target === id);
+      });
+      document.querySelectorAll('.indicator-section').forEach(section => {
+        section.classList.toggle('active', section.id === id);
+      });
+    }
+
+    function getFormData() {
+      const data = {};
+      document.querySelectorAll('[data-save]').forEach(el => {
+        data[el.id] = el.value;
+      });
+      return data;
+    }
+
+    function setFormData(data) {
+      document.querySelectorAll('[data-save]').forEach(el => {
+        if (Object.prototype.hasOwnProperty.call(data, el.id)) {
+          el.value = data[el.id];
+        }
+      });
+      updateDashboardVisuals();
+      updateProgress();
+    }
+
+    function saveToBrowser() {
+      const data = getFormData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      alert('Saved in this browser. The machine has briefly cooperated.');
+    }
+
+    function loadFromBrowser() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        setFormData(data);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function exportResponses() {
+      const data = getFormData();
+      const filenameBase = (data.studentName || 'student').trim().replace(/\s+/g, '_') || 'student';
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${filenameBase}_econ_dashboard_responses.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function clearAll() {
+      if (!confirm('Clear all responses from the page?')) return;
+      document.querySelectorAll('[data-save]').forEach(el => {
+        if (el.type === 'range') {
+          el.value = 50;
+        } else {
+          el.value = '';
+        }
+      });
+      localStorage.removeItem(STORAGE_KEY);
+      updateDashboardVisuals();
+      updateProgress();
+    }
+
+    function importResponses(file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target.result);
+          setFormData(data);
+          alert('Responses imported. Civilization remains intact.');
+        } catch (err) {
+          alert('That file did not import correctly. Check that it is a valid JSON export from this project.');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function dialLabelFromValue(indicator, value) {
+      const num = Number(value);
+      if (num <= 20) return indicator.dashboard.labels[0];
+      if (num >= 80) return indicator.dashboard.labels[2];
+      return indicator.dashboard.labels[1];
+    }
+
+    function interpolateColor(value, reverse = false) {
+      const v = Math.max(0, Math.min(100, Number(value)));
+      const stops = reverse
+        ? [
+            { p: 0, c: [34, 197, 94] },
+            { p: 50, c: [245, 158, 11] },
+            { p: 100, c: [220, 38, 38] }
+          ]
+        : [
+            { p: 0, c: [220, 38, 38] },
+            { p: 50, c: [245, 158, 11] },
+            { p: 100, c: [34, 197, 94] }
+          ];
+      const [a, b] = v <= 50 ? [stops[0], stops[1]] : [stops[1], stops[2]];
+      const t = (v - a.p) / (b.p - a.p);
+      const c = a.c.map((n, i) => Math.round(n + (b.c[i] - n) * t));
+      return `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
+    }
+
+    function gaugeGradient(indicatorId) {
+      if (indicatorId === 'gdp') {
+        return 'conic-gradient(from 180deg, #dc2626 0deg 60deg, #f59e0b 60deg 120deg, #22c55e 120deg 180deg)';
+      }
+      if (indicatorId === 'unemployment') {
+        return 'conic-gradient(from 180deg, #22c55e 0deg 60deg, #f59e0b 60deg 120deg, #dc2626 120deg 180deg)';
+      }
+      if (indicatorId === 'inflation' || indicatorId === 'fedfunds') {
+        return 'linear-gradient(180deg, #dc2626 0%, #f59e0b 45%, #22c55e 100%)';
+      }
+      return '';
+    }
+
+    function isReverseGood(indicatorId) {
+      return indicatorId === 'unemployment' || indicatorId === 'inflation' || indicatorId === 'fedfunds';
+    }
+
+    function updateDashboardVisuals() {
+      indicators.forEach((indicator) => {
+        const trend = document.getElementById(`${indicator.id}_trend`).value;
+        const note = document.getElementById(`${indicator.id}_note`).value.trim();
+        const dialValue = Number(document.getElementById(`${indicator.id}_dial`).value || 50);
+        const prefix = dialLabelFromValue(indicator, dialValue);
+        const readout = document.getElementById(`${indicator.id}_dial_label`);
+        const reverse = isReverseGood(indicator.id);
+        const activeColor = interpolateColor(dialValue, reverse);
+
+        let text = prefix;
+        if (trend === 'up') text += ' • Increasing';
+        if (trend === 'down') text += ' • Decreasing';
+        if (trend === 'flat') text += ' • About the Same';
+        readout.textContent = note || text;
+        readout.style.color = activeColor;
+
+        if (indicator.id === 'gdp' || indicator.id === 'unemployment') {
+          const needle = document.getElementById(`${indicator.id}_needle`);
+          const arc = document.getElementById(`${indicator.id}_arc`);
+          const degrees = -90 + (dialValue / 100) * 180;
+          needle.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+          needle.style.setProperty('--needle-color', activeColor);
+          arc.style.setProperty('--gauge-gradient', gaugeGradient(indicator.id));
+        } else {
+          const marker = document.getElementById(`${indicator.id}_marker`);
+          const track = document.getElementById(`${indicator.id}_track`);
+          const top = 10 + ((100 - dialValue) / 100) * 230;
+          marker.style.top = `${top}px`;
+          marker.style.setProperty('--needle-color', activeColor);
+          track.style.setProperty('--gauge-gradient', gaugeGradient(indicator.id));
+        }
+      });
+    }
+
+    function attachDirectGaugeInteractions() {
+      document.querySelectorAll('.direct-gauge').forEach(gauge => {
+        const indicatorId = gauge.dataset.indicator;
+        const input = document.getElementById(`${indicatorId}_dial`);
+        const gaugeType = gauge.dataset.gaugeType;
+
+        const setFromEvent = (event) => {
+          const rect = gauge.getBoundingClientRect();
+          let value = 50;
+
+          if (gaugeType === 'dial') {
+            const x = event.clientX - rect.left;
+            value = Math.max(0, Math.min(100, (x / rect.width) * 100));
+          } else {
+            const y = event.clientY - rect.top;
+            value = Math.max(0, Math.min(100, 100 - (y / rect.height) * 100));
+          }
+
+          input.value = Math.round(value);
+          updateDashboardVisuals();
+          updateProgress();
+        };
+
+        let dragging = false;
+
+        gauge.addEventListener('pointerdown', (event) => {
+          dragging = true;
+          gauge.setPointerCapture(event.pointerId);
+          setFromEvent(event);
+        });
+
+        gauge.addEventListener('pointermove', (event) => {
+          if (!dragging) return;
+          setFromEvent(event);
+        });
+
+        gauge.addEventListener('pointerup', (event) => {
+          dragging = false;
+          gauge.releasePointerCapture(event.pointerId);
+        });
+
+        gauge.addEventListener('pointerleave', () => {
+          dragging = false;
+        });
+      });
+    }
+
+    function updateProgress() {
+      const textAreas = indicators.flatMap(indicator => [
+        `${indicator.id}_identification`,
+        `${indicator.id}_significance`,
+        `${indicator.id}_increasing`,
+        `${indicator.id}_decreasing`
+      ]);
+
+      let completed = 0;
+      let startedSections = 0;
+
+      indicators.forEach(indicator => {
+        const values = [
+          document.getElementById(`${indicator.id}_identification`).value.trim(),
+          document.getElementById(`${indicator.id}_significance`).value.trim(),
+          document.getElementById(`${indicator.id}_increasing`).value.trim(),
+          document.getElementById(`${indicator.id}_decreasing`).value.trim()
+        ];
+
+        if (values.some(Boolean)) startedSections += 1;
+        completed += values.filter(Boolean).length;
+      });
+
+      const percent = Math.round((completed / textAreas.length) * 100);
+      document.getElementById('completionValue').textContent = `${percent}%`;
+      document.getElementById('startedValue').textContent = `${startedSections} / 4`;
+
+      const dashboardReady = indicators.every(indicator => {
+        return document.getElementById(`${indicator.id}_current`).value.trim() &&
+               document.getElementById(`${indicator.id}_past`).value.trim() &&
+               document.getElementById(`${indicator.id}_trend`).value.trim();
+      });
+      document.getElementById('dashboardValue').textContent = dashboardReady ? 'Yes' : 'No';
+    }
+
+    function bindEvents() {
+      document.querySelectorAll('[data-save]').forEach(el => {
+        el.addEventListener('input', () => {
+          updateDashboardVisuals();
+          updateProgress();
+        });
+        el.addEventListener('change', () => {
+          updateDashboardVisuals();
+          updateProgress();
+        });
+      });
+
+      document.getElementById('saveBtn').addEventListener('click', saveToBrowser);
+      document.getElementById('exportBtn').addEventListener('click', exportResponses);
+      document.getElementById('clearBtn').addEventListener('click', clearAll);
+      document.getElementById('importBtn').addEventListener('click', () => {
+        document.getElementById('importFile').click();
+      });
+      document.getElementById('importFile').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) importResponses(file);
+      });
+    }
+
+    makeTabs();
+    makeIndicatorNav();
+    makeIndicatorSections();
+    makeDashboard();
+    attachDirectGaugeInteractions();
+    bindEvents();
+    loadFromBrowser();
+    updateDashboardVisuals();
+    updateProgress();
+  </script>
+</body>
+</html>
